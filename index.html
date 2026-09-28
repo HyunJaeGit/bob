@@ -1,0 +1,32 @@
+<!doctype html>
+<!-- BOB 게임의 화면 구조와 리소스 연결 -->
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BOB | 폭탄 피하기</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./game.js" defer></script>
+  </head>
+  <body>
+    <main class="game">
+      <header class="game__header">
+        <div>
+          <h1>BOB</h1>
+          <p>떨어지는 폭탄을 피해 오래 살아남으세요.</p>
+        </div>
+        <p class="score">생존 시간 <strong id="score">0</strong>초</p>
+      </header>
+
+      <div id="gameArea" class="game-area" aria-label="폭탄 피하기 게임 화면">
+        <div id="player" class="player" aria-hidden="true"></div>
+      </div>
+
+      <div class="game__footer">
+        <p id="status" role="status">시작 버튼을 눌러주세요.</p>
+        <p class="guide">이동: ← → 또는 A D</p>
+        <button id="startButton" type="button">게임 시작</button>
+      </div>
+    </main>
+  </body>
+</html>
