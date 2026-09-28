@@ -103,11 +103,11 @@ function pickBallType() {
 
 /** 화면 크기에 맞춰 공의 최대 개수를 60초까지 늘립니다. */
 function getTargetBallCount() {
-  const maxCount = gameArea.clientWidth < 800 ? 15 : 30;
+  const maxCount = gameArea.clientWidth < 800 ? 30 : 50;
   const progress = Math.min(elapsedTime, COUNT_RAMP_SECONDS)
     / COUNT_RAMP_SECONDS;
 
-  return 8 + Math.floor((maxCount - 2) * progress);
+  return 20 + Math.floor((maxCount - 2) * progress);
 }
 
 /** 60초까지 생성 간격을 줄이고 이후에는 유지합니다. */
