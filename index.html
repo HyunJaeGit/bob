@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BOB 게임의 화면 구조와 리소스 연결 -->
+<!-- BOB 게임 화면과 리소스 연결 -->
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
@@ -13,22 +13,32 @@
       <header class="game__header">
         <div>
           <h1>BOB</h1>
-          <p>위와 양옆에서 날아오는 공을 피하세요.</p>
+          <p>날아오는 공을 피해 오래 살아남으세요.</p>
         </div>
+
         <div class="game__info">
-          <p class="score">생존 시간 <strong id="score">0</strong>초</p>
+          <p class="score">
+            <span>생존 시간</span>
+            <strong><span id="score">0.0</span><small>초</small></strong>
+          </p>
           <p id="phase" class="phase">흰 공 단계</p>
         </div>
       </header>
 
       <div id="gameArea" class="game-area" aria-label="BOB 게임 화면">
         <div id="player" class="player" aria-hidden="true"></div>
+
+        <div id="gameOverlay" class="game-overlay">
+          <div class="game-overlay__content">
+            <p id="status" role="status">준비됐나요?</p>
+            <p id="finalScore" class="final-score" hidden></p>
+            <button id="startButton" type="button">게임 시작</button>
+          </div>
+        </div>
       </div>
 
       <footer class="game__footer">
-        <p id="status" role="status">시작 버튼을 눌러주세요.</p>
-        <p class="guide">키보드: 방향키 또는 WASD · 태블릿: 게임 화면 드래그</p>
-        <button id="startButton" type="button">게임 시작</button>
+        <p>키보드: 방향키 또는 WASD · 태블릿: 게임 화면 드래그</p>
       </footer>
     </main>
   </body>
