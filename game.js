@@ -103,7 +103,7 @@ function pickBallType() {
 
 /** 화면 크기에 맞춰 공의 최대 개수를 60초까지 늘립니다. */
 function getTargetBallCount() {
-  const maxCount = gameArea.clientWidth < 800 ? 7 : 10;
+  const maxCount = gameArea.clientWidth < 800 ? 7 : 15;
   const progress = Math.min(elapsedTime, COUNT_RAMP_SECONDS)
     / COUNT_RAMP_SECONDS;
 
