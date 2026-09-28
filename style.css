@@ -79,7 +79,8 @@ h1 {
   overflow: hidden;
   border: 2px solid #46506a;
   border-radius: 12px;
-  background: #222a3b;
+  /* 게임 영역에 배경 이미지를 꽉 차게 표시합니다. */
+  background: #222a3b url("./assets/game_background.png") center / cover no-repeat;
   touch-action: none;
   user-select: none;
 }
