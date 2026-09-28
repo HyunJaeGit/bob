@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BOB | 폭탄 피하기</title>
+    <title>BOB | 공 피하기</title>
     <link rel="stylesheet" href="./style.css" />
     <script src="./game.js" defer></script>
   </head>
@@ -13,20 +13,23 @@
       <header class="game__header">
         <div>
           <h1>BOB</h1>
-          <p>떨어지는 폭탄을 피해 오래 살아남으세요.</p>
+          <p>위와 양옆에서 날아오는 공을 피하세요.</p>
         </div>
-        <p class="score">생존 시간 <strong id="score">0</strong>초</p>
+        <div class="game__info">
+          <p class="score">생존 시간 <strong id="score">0</strong>초</p>
+          <p id="phase" class="phase">흰 공 단계</p>
+        </div>
       </header>
 
-      <div id="gameArea" class="game-area" aria-label="폭탄 피하기 게임 화면">
+      <div id="gameArea" class="game-area" aria-label="BOB 게임 화면">
         <div id="player" class="player" aria-hidden="true"></div>
       </div>
 
-      <div class="game__footer">
+      <footer class="game__footer">
         <p id="status" role="status">시작 버튼을 눌러주세요.</p>
-        <p class="guide">이동: ← → 또는 A D</p>
+        <p class="guide">키보드: 방향키 또는 WASD · 태블릿: 게임 화면 드래그</p>
         <button id="startButton" type="button">게임 시작</button>
-      </div>
+      </footer>
     </main>
   </body>
 </html>
