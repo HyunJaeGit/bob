@@ -1,8 +1,7 @@
-// BOB의 입력, 공 생성·이동, 충돌 판정, 점수를 관리합니다.
+// BOB의 입력, 공 생성·이동, 충돌 판정, 난이도와 점수를 관리합니다.
 const gameArea = document.querySelector("#gameArea");
 const player = document.querySelector("#player");
 const score = document.querySelector("#score");
-const phase = document.querySelector("#phase");
 const overlay = document.querySelector("#gameOverlay");
 const statusText = document.querySelector("#status");
 const finalScore = document.querySelector("#finalScore");
@@ -11,13 +10,15 @@ const startButton = document.querySelector("#startButton");
 const PLAYER_SIZE = 44;
 const PLAYER_SPEED = 360;
 const BALL_SIZE = 22;
-const MAX_BALLS = 50;
 
-// 8초마다 공의 색상과 기본 속도가 바뀝니다.
-const BALL_TIERS = [
-  { className: "ball--white", label: "흰 공 단계", speed: 210 },
-  { className: "ball--red", label: "빨간 공 단계", speed: 300 },
-  { className: "ball--black", label: "검은 공 단계", speed: 400 },
+const COUNT_RAMP_SECONDS = 60;
+const SPEED_RAMP_SECONDS = 120;
+const MAX_SPEED_INCREASE = 0.25;
+
+const BALL_TYPES = [
+  { className: "ball--white", speed: 210 },
+  { className: "ball--red", speed: 300 },
+  { className: "ball--black", speed: 400 },
 ];
 
 const pressedKeys = new Set();
@@ -53,7 +54,7 @@ function movePlayer(x, y) {
   player.style.transform = `translate3d(${playerX}px, ${playerY}px, 0)`;
 }
 
-/** 플레이어를 정확히 화면 중앙에 배치합니다. */
+/** 플레이어를 화면 중앙에 배치합니다. */
 function centerPlayer() {
   movePlayer(
     (gameArea.clientWidth - PLAYER_SIZE) / 2,
@@ -61,7 +62,7 @@ function centerPlayer() {
   );
 }
 
-/** 이전 게임을 정리하고 중앙에서 새 게임을 시작합니다. */
+/** 이전 게임을 정리하고 새 게임을 시작합니다. */
 function startGame() {
   if (frameId !== null) {
     cancelAnimationFrame(frameId);
@@ -77,7 +78,6 @@ function startGame() {
 
   centerPlayer();
   score.textContent = "0.0";
-  phase.textContent = BALL_TIERS[0].label;
   statusText.textContent = "";
   finalScore.hidden = true;
   overlay.hidden = true;
@@ -86,18 +86,46 @@ function startGame() {
   frameId = requestAnimationFrame(updateGame);
 }
 
-/** 현재 생존 시간에 해당하는 공 단계를 반환합니다. */
-function getCurrentTier() {
-  const index = Math.min(
-    Math.floor(elapsedTime / 8),
-    BALL_TIERS.length - 1
+/** 시간이 지날수록 빨간 공과 검은 공이 뽑힐 확률을 높입니다. */
+function pickBallType() {
+  const redChance = Math.min(0.45, (elapsedTime / 30) * 0.45);
+  const blackChance = Math.min(
+    0.45,
+    (Math.max(0, elapsedTime - 10) / 50) * 0.45
   );
-  return BALL_TIERS[index];
+  const whiteChance = 1 - redChance - blackChance;
+  const roll = Math.random();
+
+  if (roll < whiteChance) return BALL_TYPES[0];
+  if (roll < whiteChance + redChance) return BALL_TYPES[1];
+  return BALL_TYPES[2];
 }
 
-/** 3초마다 생성 간격을 줄여 공의 수를 늘립니다. */
+/** 화면 크기에 맞춰 공의 최대 개수를 60초까지 늘립니다. */
+function getTargetBallCount() {
+  const maxCount = gameArea.clientWidth < 800 ? 7 : 10;
+  const progress = Math.min(elapsedTime, COUNT_RAMP_SECONDS)
+    / COUNT_RAMP_SECONDS;
+
+  return 2 + Math.floor((maxCount - 2) * progress);
+}
+
+/** 60초까지 생성 간격을 줄이고 이후에는 유지합니다. */
 function getSpawnInterval() {
-  return Math.max(220, 750 - Math.floor(elapsedTime / 3) * 65);
+  const progress = Math.min(elapsedTime, COUNT_RAMP_SECONDS);
+  return Math.max(150, 750 - progress * 10);
+}
+
+/** 60초 이후 로그 곡선으로 속도를 높여 180초에 1.25배로 고정합니다. */
+function getSpeedMultiplier() {
+  const speedTime = Math.min(
+    Math.max(elapsedTime - COUNT_RAMP_SECONDS, 0),
+    SPEED_RAMP_SECONDS
+  );
+
+  return 1 + MAX_SPEED_INCREASE
+    * Math.log1p(speedTime / 30)
+    / Math.log1p(SPEED_RAMP_SECONDS / 30);
 }
 
 /** 직선 또는 대각선 각도를 선택합니다. */
@@ -106,20 +134,20 @@ function getShotAngle() {
   return 0.3 + Math.random() * 0.4;
 }
 
-/** 위·왼쪽·오른쪽에서 공을 생성합니다. */
+/** 위·왼쪽·오른쪽에서 확률에 따라 선택한 공을 생성합니다. */
 function createBall() {
-  if (balls.length >= MAX_BALLS) return;
+  if (balls.length >= getTargetBallCount()) return;
 
-  const tier = getCurrentTier();
+  const type = pickBallType();
   const element = document.createElement("div");
-  element.className = `ball ${tier.className}`;
+  element.className = `ball ${type.className}`;
   element.setAttribute("aria-hidden", "true");
 
   const width = gameArea.clientWidth;
   const height = gameArea.clientHeight;
   const side = Math.floor(Math.random() * 3);
   const angle = getShotAngle();
-  const leadDistance = BALL_SIZE + tier.speed * 0.35;
+  const leadDistance = BALL_SIZE + type.speed * 0.35;
 
   let x;
   let y;
@@ -127,26 +155,26 @@ function createBall() {
   let velocityY;
 
   if (side === 0) {
-    // 위에서 출발하며 좌우 또는 대각선 아래로 이동합니다.
+    // 위에서 아래 또는 대각선 아래로 이동합니다.
     x = Math.random() * (width - BALL_SIZE);
     y = -leadDistance;
     const inward = x < width / 2 ? 1 : -1;
-    velocityX = inward * tier.speed * Math.sin(angle);
-    velocityY = tier.speed * Math.cos(angle);
+    velocityX = inward * type.speed * Math.sin(angle);
+    velocityY = type.speed * Math.cos(angle);
   } else if (side === 1) {
-    // 왼쪽에서 출발해 오른쪽 또는 대각선으로 이동합니다.
+    // 왼쪽에서 오른쪽 또는 대각선으로 이동합니다.
     x = -leadDistance;
     y = Math.random() * (height - BALL_SIZE);
     const inward = y < height / 2 ? 1 : -1;
-    velocityX = tier.speed * Math.cos(angle);
-    velocityY = inward * tier.speed * Math.sin(angle);
+    velocityX = type.speed * Math.cos(angle);
+    velocityY = inward * type.speed * Math.sin(angle);
   } else {
-    // 오른쪽에서 출발해 왼쪽 또는 대각선으로 이동합니다.
-    x = width + tier.speed * 0.35;
+    // 오른쪽에서 왼쪽 또는 대각선으로 이동합니다.
+    x = width + type.speed * 0.35;
     y = Math.random() * (height - BALL_SIZE);
     const inward = y < height / 2 ? 1 : -1;
-    velocityX = -tier.speed * Math.cos(angle);
-    velocityY = inward * tier.speed * Math.sin(angle);
+    velocityX = -type.speed * Math.cos(angle);
+    velocityY = inward * type.speed * Math.sin(angle);
   }
 
   const ball = {
@@ -221,9 +249,7 @@ function updateGame(timestamp) {
 
   elapsedTime += deltaTime;
   spawnTimer += deltaTime * 1000;
-
   score.textContent = elapsedTime.toFixed(1);
-  phase.textContent = getCurrentTier().label;
 
   const spawnInterval = getSpawnInterval();
   if (spawnTimer >= spawnInterval) {
@@ -231,9 +257,11 @@ function updateGame(timestamp) {
     spawnTimer -= spawnInterval;
   }
 
+  const speedMultiplier = getSpeedMultiplier();
+
   for (const ball of balls) {
-    ball.x += ball.velocityX * deltaTime;
-    ball.y += ball.velocityY * deltaTime;
+    ball.x += ball.velocityX * speedMultiplier * deltaTime;
+    ball.y += ball.velocityY * speedMultiplier * deltaTime;
     ball.age += deltaTime;
     ball.element.style.transform =
       `translate3d(${ball.x}px, ${ball.y}px, 0)`;
@@ -292,7 +320,7 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-// 태블릿에서는 게임 영역을 드래그한 거리만큼 플레이어를 이동합니다.
+// 태블릿에서는 드래그한 거리만큼 플레이어를 이동합니다.
 gameArea.addEventListener("pointerdown", (event) => {
   if (!isRunning) return;
 
@@ -328,5 +356,5 @@ window.addEventListener("resize", () => {
 
 startButton.addEventListener("click", startGame);
 
-// 게임 시작 전에도 플레이어가 화면 중앙에 보이도록 배치합니다.
+// 게임 시작 전에도 플레이어를 화면 중앙에 표시합니다.
 centerPlayer();
