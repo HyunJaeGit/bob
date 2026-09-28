@@ -93,12 +93,11 @@ h1 {
   will-change: transform;
 }
 
+/* 플레이어 이미지를 44×44 영역에 표시합니다. */
 .player {
   width: 44px;
   height: 44px;
-  border-radius: 10px;
-  background: #5ee0a0;
-  box-shadow: 0 0 14px rgb(94 224 160 / 35%);
+  background: url("./assets/player_icon.png") center / contain no-repeat;
 }
 
 .ball {
