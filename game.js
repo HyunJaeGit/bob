@@ -107,13 +107,13 @@ function getTargetBallCount() {
   const progress = Math.min(elapsedTime, COUNT_RAMP_SECONDS)
     / COUNT_RAMP_SECONDS;
 
-  return 20 + Math.floor((maxCount - 2) * progress);
+  return 15 + Math.floor((maxCount - 2) * progress);
 }
 
 /** 60초까지 생성 간격을 줄이고 이후에는 유지합니다. */
 function getSpawnInterval() {
   const progress = Math.min(elapsedTime, COUNT_RAMP_SECONDS);
-  return Math.max(150, 750 - progress * 10);
+  return Math.max(150, 250 - progress * 10);
 }
 
 /** 60초 이후 로그 곡선으로 속도를 높여 180초에 1.25배로 고정합니다. */
