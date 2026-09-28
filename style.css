@@ -22,16 +22,12 @@ body {
   width: min(100%, 900px);
 }
 
-.game__header,
-.game__footer {
+.game__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
-}
-
-.game__header {
   margin-bottom: 14px;
 }
 
@@ -46,22 +42,39 @@ h1 {
 }
 
 .game__header > div > p,
-.guide {
+.game__footer {
   color: #aeb6c9;
 }
 
 .game__info {
-  text-align: right;
+  text-align: center;
+}
+
+.score {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 16px;
+  border: 1px solid #58637e;
+  border-radius: 12px;
+  background: #222a3b;
+  color: #f4f6fb;
 }
 
 .score strong {
   color: #ffd166;
-  font-size: 24px;
+  font-size: clamp(30px, 4vw, 42px);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.score small {
+  margin-left: 3px;
+  font-size: 16px;
 }
 
 .phase {
-  margin-top: 4px !important;
-  color: #aeb6c9;
+  margin-top: 5px !important;
   font-size: 14px;
 }
 
@@ -76,7 +89,7 @@ h1 {
   user-select: none;
 }
 
-/* JS는 위치만 계산하고, 모양과 색상은 CSS에서 관리합니다. */
+/* JS는 위치를 계산하고 요소의 모양은 CSS에서 관리합니다. */
 .player,
 .ball {
   position: absolute;
@@ -115,18 +128,41 @@ h1 {
   box-shadow: 0 0 14px rgb(170 179 199 / 55%);
 }
 
-.game__footer {
-  margin-top: 14px;
+/* 시작과 종료 화면을 게임 영역 중앙에 표시합니다. */
+.game-overlay {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(14 18 28 / 78%);
+}
+
+.game-overlay__content {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  text-align: center;
 }
 
 #status {
-  flex-basis: 100%;
-  min-height: 24px;
+  margin: 0;
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: bold;
+}
+
+.final-score {
+  margin: 0;
+  color: #ffd166;
+  font-size: clamp(32px, 6vw, 52px);
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
 }
 
 button {
-  min-height: 44px;
-  padding: 10px 18px;
+  min-height: 48px;
+  padding: 12px 24px;
   border: 0;
   border-radius: 8px;
   background: #ffd166;
@@ -140,20 +176,21 @@ button:hover {
   background: #ffe29b;
 }
 
+.game__footer {
+  margin-top: 12px;
+  text-align: center;
+}
+
 [hidden] {
   display: none !important;
 }
 
 @media (max-width: 600px) {
-  .game__header {
-    align-items: flex-start;
-  }
-
   .game__info {
-    text-align: left;
+    width: 100%;
   }
 
-  .guide {
-    flex-basis: 100%;
+  .score {
+    justify-content: center;
   }
 }
