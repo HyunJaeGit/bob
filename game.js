@@ -9,7 +9,7 @@ const startButton = document.querySelector("#startButton");
 
 const PLAYER_SIZE = 44;
 const PLAYER_SPEED = 360;
-const BALL_SIZE = 22;
+const BALL_SIZE = 12;
 
 const COUNT_RAMP_SECONDS = 60;
 const SPEED_RAMP_SECONDS = 120;
