@@ -10,7 +10,7 @@ const startButton = document.querySelector("#startButton");
 
 const PLAYER_SIZE = 44;
 const PLAYER_SPEED = 360;
-const BALL_SIZE = 32;
+const BALL_SIZE = 22;
 const MAX_BALLS = 50;
 
 // 8초마다 공의 색상과 기본 속도가 바뀝니다.
@@ -78,6 +78,7 @@ function startGame() {
   centerPlayer();
   score.textContent = "0.0";
   phase.textContent = BALL_TIERS[0].label;
+  statusText.textContent = "";
   finalScore.hidden = true;
   overlay.hidden = true;
   isRunning = true;
