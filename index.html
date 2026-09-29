@@ -40,17 +40,41 @@
 
       <footer class="game__footer">
         <p>키보드: 방향키 또는 WASD · 태블릿: 게임 화면 드래그</p>
+        <button id="installButton" type="button" hidden>BOB 앱 설치</button>
         <p>made by KwonHJ</p>
       </footer>
     </main>
 
-    <script>
-  // GitHub Pages에서 오프라인 게임 파일을 관리합니다.
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js");
+  <script>
+    // 오프라인 실행을 위한 서비스 워커를 등록합니다.
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js");
+      });
+    }
+  
+    // 설치할 수 있는 브라우저에서만 앱 설치 버튼을 표시합니다.
+    const installButton = document.querySelector("#installButton");
+    let installPrompt = null;
+  
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      installPrompt = event;
+      installButton.hidden = false;
     });
-  }
-    </script>
+  
+    installButton.addEventListener("click", async () => {
+      if (!installPrompt) return;
+  
+      await installPrompt.prompt();
+      installPrompt = null;
+      installButton.hidden = true;
+    });
+  
+    window.addEventListener("appinstalled", () => {
+      installPrompt = null;
+      installButton.hidden = true;
+    });
+  </script>
   </body>
 </html>
