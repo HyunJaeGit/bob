@@ -47,7 +47,25 @@ h1 {
 }
 
 .game__info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   text-align: center;
+}
+
+/* 설치 버튼은 게임 시작 버튼보다 작게 표시합니다. */
+#installButton {
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid #58637e;
+  background: transparent;
+  color: #f4f6fb;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+#installButton:hover {
+  background: #30394b;
 }
 
 .score {
@@ -183,9 +201,15 @@ button:hover {
 @media (max-width: 600px) {
   .game__info {
     width: 100%;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .score {
     justify-content: center;
+  }
+
+  #installButton {
+    align-self: flex-end;
   }
 }
