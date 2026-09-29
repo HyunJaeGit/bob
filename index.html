@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- BOB 게임 화면과 리소스 연결 -->
+<!-- BOB 게임 화면과 PWA 설치 기능 연결 -->
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
@@ -7,17 +7,14 @@
     <meta name="theme-color" content="#141824" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <title>BOB | 공 피하기</title>
-    <link rel="stylesheet" href="./style.css?v=4" />
+    <link rel="stylesheet" href="./style.css?v=5" />
     <script src="./game.js?v=3" defer></script>
   </head>
   <body>
     <main class="game">
       <header class="game__header">
         <div>
-          <div class="game__title-row">
-            <h1>BOB</h1>
-            <button id="installButton" type="button" hidden>앱 설치</button>
-          </div>
+          <h1>BOB</h1>
           <p>날아오는 공을 피해 오래 살아남으세요.</p>
         </div>
 
@@ -36,7 +33,13 @@
           <div class="game-overlay__content">
             <p id="status" role="status">준비됐나요?</p>
             <p id="finalScore" class="final-score" hidden></p>
-            <button id="startButton" type="button">게임 시작</button>
+
+            <div class="game-overlay__actions">
+              <button id="startButton" type="button">웹으로 플레이</button>
+              <button id="installButton" type="button" hidden>
+                앱 설치하기
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -55,14 +58,26 @@
         });
       }
 
-      // 설치 가능한 브라우저에서만 설치 버튼을 표시합니다.
       const installButton = document.querySelector("#installButton");
-      let installPrompt = null;
+      const startButtonElement = document.querySelector("#startButton");
 
+      let installPrompt = null;
+      let hasStartedGame = false;
+
+      // 설치 가능한 브라우저에서만 설치 선택지를 표시합니다.
       window.addEventListener("beforeinstallprompt", (event) => {
         event.preventDefault();
         installPrompt = event;
-        installButton.hidden = false;
+
+        if (!hasStartedGame) {
+          installButton.hidden = false;
+        }
+      });
+
+      // 게임을 시작한 뒤에는 종료 화면에도 설치 버튼을 표시하지 않습니다.
+      startButtonElement.addEventListener("click", () => {
+        hasStartedGame = true;
+        installButton.hidden = true;
       });
 
       installButton.addEventListener("click", async () => {
