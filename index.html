@@ -7,21 +7,23 @@
     <meta name="theme-color" content="#141824" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <title>BOB | 공 피하기</title>
-    <link rel="stylesheet" href="./style.css?v=3" />
+    <link rel="stylesheet" href="./style.css?v=4" />
     <script src="./game.js?v=3" defer></script>
   </head>
   <body>
     <main class="game">
       <header class="game__header">
         <div>
-          <h1>BOB</h1>
+          <div class="game__title-row">
+            <h1>BOB</h1>
+            <button id="installButton" type="button" hidden>앱 설치</button>
+          </div>
           <p>날아오는 공을 피해 오래 살아남으세요.</p>
         </div>
 
         <div class="game__info">
           <p class="score">
             <span>생존 시간</span>
-            <button id="installButton" type="button" hidden>BOB 앱 설치</button>
             <strong><span id="score">0.0</span><small>초</small></strong>
           </p>
         </div>
@@ -45,36 +47,36 @@
       </footer>
     </main>
 
-  <script>
-    // 오프라인 실행을 위한 서비스 워커를 등록합니다.
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js");
+    <script>
+      // 오프라인 실행을 위한 서비스 워커를 등록합니다.
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("./sw.js");
+        });
+      }
+
+      // 설치 가능한 브라우저에서만 설치 버튼을 표시합니다.
+      const installButton = document.querySelector("#installButton");
+      let installPrompt = null;
+
+      window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault();
+        installPrompt = event;
+        installButton.hidden = false;
       });
-    }
-  
-    // 설치할 수 있는 브라우저에서만 앱 설치 버튼을 표시합니다.
-    const installButton = document.querySelector("#installButton");
-    let installPrompt = null;
-  
-    window.addEventListener("beforeinstallprompt", (event) => {
-      event.preventDefault();
-      installPrompt = event;
-      installButton.hidden = false;
-    });
-  
-    installButton.addEventListener("click", async () => {
-      if (!installPrompt) return;
-  
-      await installPrompt.prompt();
-      installPrompt = null;
-      installButton.hidden = true;
-    });
-  
-    window.addEventListener("appinstalled", () => {
-      installPrompt = null;
-      installButton.hidden = true;
-    });
-  </script>
+
+      installButton.addEventListener("click", async () => {
+        if (!installPrompt) return;
+
+        await installPrompt.prompt();
+        installPrompt = null;
+        installButton.hidden = true;
+      });
+
+      window.addEventListener("appinstalled", () => {
+        installPrompt = null;
+        installButton.hidden = true;
+      });
+    </script>
   </body>
 </html>
